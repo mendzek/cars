@@ -31,10 +31,7 @@ def AcceptLogPass():
 
     if LogPassBool:
         print("nice")
-        if len(os.listdir('Projects')) == 0:
-            mainWindow.tableViewInsert(False)
-        else:
-            mainWindow.tableViewInsert(True)
+        #mainWindow.tableViewInsert()
         mainWindow.deiconify()
         LogPassWindow.destroy()
 
