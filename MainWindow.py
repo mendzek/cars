@@ -15,6 +15,7 @@ class MainWindow(Tk):
     selectedProjectsList = list()
     columns = tuple()
     connect = sqlite3.connect
+    comboBoxAnswer = ""
 
     def __init__(self):
         super().__init__()
@@ -31,7 +32,6 @@ class MainWindow(Tk):
 
         self.AddMenu = Menu(self, tearoff=0, background="#ace600")
         self.AddMenu.add_cascade(label="Add row", command=self.menuAddRow, background="#86b300")
-        self.AddMenu.add_cascade(label="Add column", command=self.menuAddColumn, background="#86b300")
 
         self.mainMenu.add_cascade(label="Add", menu=self.AddMenu, background="#ace600")
 
@@ -92,7 +92,8 @@ class MainWindow(Tk):
                 pass
 
 
-
+        self.scrollbar = ttk.Scrollbar(self, orient="horizontal", command=self.tree.yview)
+        self.scrollbar.pack(side=BOTTOM, fill=X)
 
     def menuEdit(self):
             MainWindow.selectedProjects = self.selectedProjects
@@ -100,9 +101,6 @@ class MainWindow(Tk):
 
     def menuAddRow(self):
         newRowWindow = NewRowWindow()
-
-    def menuAddColumn(self):
-        newColumnWindow = NewColumnWindow()
 
     def menuDeleteSelected(self):
         self.connect = sqlite3.connect(self.sqlPath, timeout=5.0, detect_types=0,
@@ -114,17 +112,28 @@ class MainWindow(Tk):
         else:
             self.cursor.execute(f"DELETE FROM {self.comboBox.get()} WHERE ID = %(first)s" % {"first": self.selectedProjectsList[0]})
             self.connect.commit()
-            mainWindow=MainWindow()
-            mainWindow.tableViewInsert()
-            self.destroy()
+            self.quickFunc()
 
     def menuUpdateTable(self):
         self.selectedProjects = None
-        mainWindow=MainWindow()
-        mainWindow.tableViewInsert()
-        self.destroy()
+        self.quickFunc()
 
     def tableViewInsertEvent(self, event):
+        MainWindow.comboBoxAnswer = self.comboBox.get()
+        self.quickFunc()
+
+    def select(self,event):
+        for selected_item in self.tree.selection():
+            MainWindow.selectedProjectsList.clear()
+            self.selectedProjects = ""
+            self.item = self.tree.item(selected_item)
+            self.project = self.item["values"]
+            MainWindow.selectedProjectsList = self.item["values"].copy()
+            self.selectedProjects = f"{self.selectedProjects}{self.project}\n"
+        self.label["text"] = self.selectedProjects
+        print(self.selectedProjects)
+
+    def quickFunc(self):
         self.tableValues.clear()
         self.tree.destroy()
         self.sqlPath = "festival.db"
@@ -164,18 +173,5 @@ class MainWindow(Tk):
                 self.tree.insert("", END, values=x)
             except:
                 pass
-
-    def select(self,event):
-        for selected_item in self.tree.selection():
-            MainWindow.selectedProjectsList.clear()
-            self.selectedProjects = ""
-            self.item = self.tree.item(selected_item)
-            self.project = self.item["values"]
-            MainWindow.selectedProjectsList = self.item["values"].copy()
-            self.selectedProjects = f"{self.selectedProjects}{self.project}\n"
-        self.label["text"] = self.selectedProjects
-        print(self.selectedProjects)
-
-
 
 

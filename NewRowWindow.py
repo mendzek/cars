@@ -1,3 +1,4 @@
+import sqlite3
 from tkinter import *
 from tkinter import ttk
 import LogPassWindow
@@ -11,6 +12,7 @@ class NewRowWindow(Tk):
         self.list = ["Integer", "Text"]
         self.LabelList = list()
         self.entrysList = list()
+        self.nameOfTable = LogPassWindow.MainWindow.comboBoxAnswer
         self.title("ProgramPython - New row")
         self.geometry("800x300")
 
@@ -28,7 +30,10 @@ class NewRowWindow(Tk):
         self.config(background="#ccff33")
 
     def BT_OK(self):
-        self.connect = LogPassWindow.mainWindow.connect
+        self.sqlPath = "festival.db"
+        self.connect = sqlite3.connect(self.sqlPath, timeout=5.0, detect_types=0,
+                                       isolation_level='DEFERRED', check_same_thread=True, factory=sqlite3.Connection,
+                                       cached_statements=128, uri=False)
         self.cursor = self.connect.cursor()
         self.strTemp = "("
         self.check=True
@@ -52,6 +57,6 @@ class NewRowWindow(Tk):
                 self.strTemp2 += f"'{self.entrysList[x].get()}'"
         self.strTemp2 += ")"
 
-        self.cursor.execute("INSERT INTO Projects%(first)s VALUES %(second)s" % {"first": self.strTemp, "second": self.strTemp2})
+        self.cursor.execute("INSERT INTO %(third)s%(first)s VALUES %(second)s" % {"first": self.strTemp, "second": self.strTemp2, "third": self.nameOfTable})
         self.connect.commit()
         self.destroy()

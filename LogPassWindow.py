@@ -2,11 +2,11 @@ import os
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import showwarning, showinfo, askyesno
-
 from MainWindow import *
 import sqlite3
 import random
 import sys
+
 
 connectLogPass = sqlite3.connect("LogPass.db")
 cursorLogPass = connectLogPass.cursor()
@@ -14,17 +14,14 @@ cursorLogPass.execute("CREATE TABLE IF NOT EXISTS logPass (id INTEGER UNIQUE,log
 connectLogPass.commit()
 cursorLogPass.execute("INSERT OR REPLACE INTO logPass VALUES(1, \"asd\",\"asd\")")
 connectLogPass.commit()
-#rightLog = "asd"
-#rightPass = "asd" #change to find right log pass in db
 mainWindow = MainWindow()
 mainWindow.withdraw()
 
-if not os.path.exists("Projects"):
-    os.makedirs("Projects")
-
 def AcceptLogPass():
+    connectLogPass = sqlite3.connect("LogPass.db")
     query = 'SELECT * FROM logPass WHERE login = ? AND password = ?'
     LogPassBool = False
+
     if cursorLogPass.execute(query, (EntryLog.get(), EntryPass.get())).fetchone() != None:
         LogPassBool = True
     connectLogPass.commit()
@@ -40,6 +37,9 @@ def AcceptLogPass():
         print("not nice")
 
         showwarning(title="Неверный логин или пароль", message="Неверный логин или пароль, попробуйте снова")
+
+if not os.path.exists("Projects"):
+    os.makedirs("Projects")
 
 LogPassWindow = Tk()
 LogPassWindow.title("ProgramPython - Log in")
@@ -59,5 +59,11 @@ EntryPass.pack(anchor=CENTER)
 
 BTLogPassAccept = ttk.Button(LogPassWindow, text="Log in", width=20, command=AcceptLogPass)
 BTLogPassAccept.pack(anchor=CENTER)
+
+Tables = ["Председатель клуба", "Организатор"]
+Tables_var = StringVar(value=Tables[0])
+comboBox = ttk.Combobox(LogPassWindow, textvariable=Tables_var, values=Tables, state="readonly")
+comboBox.pack(anchor=NW, padx=6, pady=6)
+comboBox.set("Организатор")
 
 LogPassWindow.config(bg='#ccff33')
