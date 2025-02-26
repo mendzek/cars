@@ -1,9 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 import sqlite3
-import MainWindow
+import MainWindowOrganisator
 from tkinter.messagebox import showwarning
-from MainWindow import *
+from MainWindowOrganisator import *
 from LogPassWindow import *
 import LogPassWindow
 
@@ -16,12 +16,12 @@ class SelectedWorkingWindow(Tk):
     def __init__(self):
         super().__init__()
 
-        self.connect = LogPassWindow.MainWindow.connect
+        self.connect = LogPassWindow.MainWindowOrganisator.connect
 
         self.entrysList = list()
         self.LabelList = list()
-        self.selectedProjectsList = LogPassWindow.MainWindow.selectedProjectsList.copy()
-        self.columns = LogPassWindow.MainWindow.columns
+        self.selectedProjectsList = LogPassWindow.MainWindowOrganisator.selectedProjectsList.copy()
+        self.columns = LogPassWindow.MainWindowOrganisator.columns
 
         self.title("ProgramPython - Selected work window")
         self.geometry("800x300")
@@ -32,7 +32,7 @@ class SelectedWorkingWindow(Tk):
         self.config(background="#ccff33")
 
         for x in range(len(self.selectedProjectsList)):
-            self.label = ttk.Label(self, text=f"{LogPassWindow.MainWindow.columns[x]}", background="#ccff33")
+            self.label = ttk.Label(self, text=f"{LogPassWindow.MainWindowOrganisator.columns[x]}", background="#ccff33")
             self.label.pack(expand=1)
             self.LabelList.append(self.label)
             self.entry = ttk.Entry(self,name="entry_"+str(x), state=NORMAL, background="#ccff33")

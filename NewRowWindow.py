@@ -12,12 +12,15 @@ class NewRowWindow(Tk):
         self.list = ["Integer", "Text"]
         self.LabelList = list()
         self.entrysList = list()
-        self.nameOfTable = LogPassWindow.MainWindow.comboBoxAnswer
+        if LogPassWindow.MainWindowOrganisator.catOrExpert == 0:
+            self.nameOfTable = "Кошки"
+        if LogPassWindow.MainWindowOrganisator.catOrExpert == 1:
+            self.nameOfTable = "Эксперты"
         self.title("ProgramPython - New row")
         self.geometry("800x300")
 
-        for x in range(len(LogPassWindow.MainWindow.columns)):
-            self.label = ttk.Label(self,text=f"{LogPassWindow.MainWindow.columns[x]}", background="#ccff33")
+        for x in range(len(LogPassWindow.MainWindowOrganisator.columns)):
+            self.label = ttk.Label(self, text=f"{LogPassWindow.MainWindowOrganisator.columns[x]}", background="#ccff33")
             self.label.pack(expand=1)
             self.LabelList.append(self.label)
             self.entry = ttk.Entry(self,name="entry_"+str(x), state=NORMAL, background="#ccff33")
@@ -37,13 +40,13 @@ class NewRowWindow(Tk):
         self.cursor = self.connect.cursor()
         self.strTemp = "("
         self.check=True
-        for x in range(len(LogPassWindow.MainWindow.columns)):
+        for x in range(len(LogPassWindow.MainWindowOrganisator.columns)):
             if self.check==True:
-                self.strTemp += f"'{LogPassWindow.MainWindow.columns[x]}'"
+                self.strTemp += f"'{LogPassWindow.MainWindowOrganisator.columns[x]}'"
                 self.check=False
             else:
                 self.strTemp += ", "
-                self.strTemp += f"'{LogPassWindow.MainWindow.columns[x]}'"
+                self.strTemp += f"'{LogPassWindow.MainWindowOrganisator.columns[x]}'"
         self.strTemp += ")"
 
         self.strTemp2 = "("

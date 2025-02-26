@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import sqlite3
 import LogPassWindow
-from MainWindow import *
+from MainWindowOrganisator import *
 
 
 class NewColumnWindow(Tk):
@@ -24,7 +24,7 @@ class NewColumnWindow(Tk):
         self.config(background="#ccff33")
 
     def BT_OK(self):
-        self.connect = LogPassWindow.MainWindow.connect
+        self.connect = LogPassWindow.MainWindowOrganisator.connect
         self.cursor = self.connect.cursor()
         self.cursor.execute("ALTER TABLE Projects ADD %(first)s %(second)s" % {"first":self.entry.get(), "second":"TEXT"})
         self.connect.commit()

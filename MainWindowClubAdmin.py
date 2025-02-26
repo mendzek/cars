@@ -8,7 +8,7 @@ from NewColumnWindow import *
 from NewRowWindow import *
 from tkinter import filedialog
 
-class MainWindow(Tk):
+class MainWindowClubAdmin(Tk):
 
     sqlPath = ""
     selectedProjects = ""
@@ -25,20 +25,19 @@ class MainWindow(Tk):
         self.numOfRows=any
         self.selectedProjects = ""
 
-        self.mainMenu = Menu(self, background="#ace600")
+        self.mainMenu = Menu(self)
         self.editMenu = Menu(self,tearoff=0)
-        self.editMenu.add_cascade(label="Edit table",command=self.menuEdit, background="#86b300")
-        self.mainMenu.add_cascade(label="Edit",menu=self.editMenu, background="#86b300")
 
-        self.AddMenu = Menu(self, tearoff=0, background="#ace600")
-        self.AddMenu.add_cascade(label="Add row", command=self.menuAddRow, background="#86b300")
+        self.AddMenu = Menu(self, tearoff=0)
+        self.AddMenu.add_cascade(label="Добавить кошку в клуб", command=self.menuAddCat)
+        self.AddMenu.add_cascade(label="Добавить эксперта в клуб", command=self.menuAddExpert)
 
-        self.mainMenu.add_cascade(label="Add", menu=self.AddMenu, background="#ace600")
+        self.mainMenu.add_cascade(label="Add", menu=self.AddMenu)
 
-        self.mainMenu.add_cascade(label="Update Table", command=self.menuUpdateTable, background="#ace600")
-        self.mainMenu.add_cascade(label="Delete selected row", command=self.menuDeleteSelected, background="#ace600")
+        self.mainMenu.add_cascade(label="Обновить таблицу", command=self.menuUpdateTable)
+        self.mainMenu.add_cascade(label="Удалить выбранную строку", command=self.menuDeleteSelected)
 
-        self.label=ttk.Label(self,text="asd", background="#86b300")
+        self.label=ttk.Label(self,text="-")
         self.label.pack(anchor=N, fill=X,expand=1)
 
         self.Tables = ["Кошки", "Клубы", "Эксперты", "Ринги", "Расписание", "Результаты"]
@@ -47,28 +46,28 @@ class MainWindow(Tk):
         self.comboBox.pack(anchor=NW, padx=6, pady=6)
         self.comboBox.bind("<<ComboboxSelected>>", self.tableViewInsertEvent)
 
-        self.title("ProgramPython - Work window")
+        self.title("ProgramPython - Club admin window")
         self.geometry("1000x500")
-        self.config(menu=self.mainMenu, background="#ccff33")
+        self.config(menu=self.mainMenu)
 
         self.sqlPath = "festival.db"
-        MainWindow.sqlPath = self.sqlPath
+        MainWindowClubAdmin.sqlPath = self.sqlPath
         self.connect = sqlite3.connect(self.sqlPath, timeout=5.0, detect_types=0,
                                        isolation_level='DEFERRED', check_same_thread=True, factory=sqlite3.Connection,
                                        cached_statements=128, uri=False)
-        MainWindow.connect = self.connect
+        MainWindowClubAdmin.connect = self.connect
         self.cursor = self.connect.cursor()
-        MainWindow.columns = ()
+        MainWindowClubAdmin.columns = ()
         self.cursor.execute(f"SELECT COUNT(*) FROM {self.comboBox.get()}")
         self.numOfRows = self.cursor.fetchone()[0]
         self.numOfColumns = \
         self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('{self.comboBox.get()}')").fetchone()[0]
         for x in range(self.numOfColumns):
-            MainWindow.columns += self.cursor.execute(
+            MainWindowClubAdmin.columns += self.cursor.execute(
                 f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
-        self.tree = ttk.Treeview(self, columns=MainWindow.columns, show="headings")
+        self.tree = ttk.Treeview(self, columns=MainWindowClubAdmin.columns, show="headings")
         self.tree.pack(anchor=S, fill=BOTH, expand=1)
-        for x in MainWindow.columns:
+        for x in MainWindowClubAdmin.columns:
             self.tree.heading(x, text=x)
 
         self.tree.bind("<<TreeviewSelect>>", self.select)
@@ -76,7 +75,7 @@ class MainWindow(Tk):
         for x in self.tree.get_children():
             self.tree.delete(x)
 
-        self.headValues.extend(MainWindow.columns)
+        self.headValues.extend(MainWindowClubAdmin.columns)
         self.checkTemp = False
 
         for x in range(self.numOfRows + 1):
@@ -95,11 +94,12 @@ class MainWindow(Tk):
         self.scrollbar = ttk.Scrollbar(self, orient="horizontal", command=self.tree.yview)
         self.scrollbar.pack(side=BOTTOM, fill=X)
 
-    def menuEdit(self):
-            MainWindow.selectedProjects = self.selectedProjects
-            selectedWorkingWindow = SelectedWorkingWindow()
+    def menuAddCat(self):
+        MainWindowOrganisator.catOrExpert = 0
+        newRowWindow = NewRowWindow()
 
-    def menuAddRow(self):
+    def menuAddExpert(self):
+        MainWindowOrganisator.catOrExpert = 1
         newRowWindow = NewRowWindow()
 
     def menuDeleteSelected(self):
@@ -119,16 +119,16 @@ class MainWindow(Tk):
         self.quickFunc()
 
     def tableViewInsertEvent(self, event):
-        MainWindow.comboBoxAnswer = self.comboBox.get()
+        MainWindowClubAdmin.comboBoxAnswer = self.comboBox.get()
         self.quickFunc()
 
     def select(self,event):
         for selected_item in self.tree.selection():
-            MainWindow.selectedProjectsList.clear()
+            MainWindowClubAdmin.selectedProjectsList.clear()
             self.selectedProjects = ""
             self.item = self.tree.item(selected_item)
             self.project = self.item["values"]
-            MainWindow.selectedProjectsList = self.item["values"].copy()
+            MainWindowClubAdmin.selectedProjectsList = self.item["values"].copy()
             self.selectedProjects = f"{self.selectedProjects}{self.project}\n"
         self.label["text"] = self.selectedProjects
         print(self.selectedProjects)
@@ -137,21 +137,21 @@ class MainWindow(Tk):
         self.tableValues.clear()
         self.tree.destroy()
         self.sqlPath = "festival.db"
-        MainWindow.sqlPath = self.sqlPath
+        MainWindowClubAdmin.sqlPath = self.sqlPath
         self.connect = sqlite3.connect(self.sqlPath, timeout=5.0, detect_types=0,
                                        isolation_level='DEFERRED', check_same_thread=True, factory=sqlite3.Connection,
                                        cached_statements=128, uri=False)
-        MainWindow.connect = self.connect
+        MainWindowClubAdmin.connect = self.connect
         self.cursor = self.connect.cursor()
-        MainWindow.columns = ()
+        MainWindowClubAdmin.columns = ()
         self.cursor.execute(f"SELECT COUNT(*) FROM {self.comboBox.get()}")
         self.numOfRows = self.cursor.fetchone()[0]
         self.numOfColumns=self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('{self.comboBox.get()}')").fetchone()[0]
         for x in range(self.numOfColumns):
-            MainWindow.columns += self.cursor.execute(f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
-        self.tree = ttk.Treeview(self, columns=MainWindow.columns, show="headings")
+            MainWindowClubAdmin.columns += self.cursor.execute(f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
+        self.tree = ttk.Treeview(self, columns=MainWindowClubAdmin.columns, show="headings")
         self.tree.pack(anchor=S,fill=BOTH, expand=1)
-        for x in MainWindow.columns:
+        for x in MainWindowClubAdmin.columns:
             self.tree.heading(x,text=x)
 
         self.tree.bind("<<TreeviewSelect>>", self.select)
@@ -159,7 +159,7 @@ class MainWindow(Tk):
         for x in self.tree.get_children():
             self.tree.delete(x)
 
-        self.headValues.extend(MainWindow.columns)
+        self.headValues.extend(MainWindowClubAdmin.columns)
         self.checkTemp=False
 
         for x in range(self.numOfRows+1):
