@@ -54,17 +54,46 @@ LogPassWindow = Tk()
 LogPassWindow.title("ProgramPython - Log in")
 LogPassWindow.geometry("600x400")
 
+def on_entry_click1( event):
+    if EntryLog.get() == 'Login':
+        EntryLog.delete(0, "end")
+        EntryLog.insert(0, '')
+        EntryLog.config(foreground='black')
+
+
+def on_focusout1(event):
+    if EntryLog.get() == '':
+        EntryLog.insert(0, 'Login')
+        EntryLog.config(foreground='grey')
+
+
+def on_entry_click2( event):
+    if EntryPass.get() == 'Password':
+        EntryPass.delete(0, "end")
+        EntryPass.insert(0, '')
+        EntryPass.config(foreground='black')
+
+
+def on_focusout2( event):
+    if EntryPass.get() == '':
+        EntryPass.insert(0, 'Password')
+        EntryPass.config(foreground='grey')
+
 MainLabel = ttk.Label(LogPassWindow,width=30, font=("Arial", 30),text="ВЫСТАВКА КОШЕК")
 MainLabel.pack(anchor=CENTER, pady=20)
 
-EntryLog = ttk.Entry(LogPassWindow,width=15, font=("Arial", 20))
+EntryLog = ttk.Entry(LogPassWindow, width=15, foreground='grey')
 EntryLog.insert(0, "Login")
+EntryLog.bind('<FocusIn>', on_entry_click1)
+EntryLog.bind('<FocusOut>', on_focusout1)
 EntryLog.pack(anchor=CENTER, pady=20)
 
-EntryPass = ttk.Entry(LogPassWindow,width=15, font=("Arial", 20))
+EntryPass = ttk.Entry(LogPassWindow, width=15, foreground='grey')
 EntryPass.config(show="*")
 EntryPass.insert(0, "Password")
-EntryPass.pack(anchor=CENTER)
+EntryPass.bind('<FocusIn>', on_entry_click2)
+EntryPass.bind('<FocusOut>', on_focusout2)
+EntryPass.pack(anchor=CENTER, pady=20)
 
 BTLogPassAccept = ttk.Button(LogPassWindow, text="Log in", width=20, command=AcceptLogPass)
 BTLogPassAccept.pack(anchor=CENTER)
@@ -74,3 +103,5 @@ Tables_var = StringVar(value=Tables[0])
 comboBox = ttk.Combobox(LogPassWindow, textvariable=Tables_var, values=Tables, state="readonly")
 comboBox.pack(anchor=NW, padx=6, pady=6)
 comboBox.set("Организатор")
+
+

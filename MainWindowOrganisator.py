@@ -1,13 +1,11 @@
 from tkinter import *
 from tkinter import ttk
 import sqlite3
-
 import LogPassWindow
 from SelectedWorkingWindow import *
 from NewColumnWindow import *
 from NewRowWindow import *
 from tkinter import filedialog
-
 from SelectedWorkingWindow import *
 
 
@@ -29,17 +27,8 @@ class MainWindowOrganisator(Tk):
         self.numOfRows=any
         self.selectedProjects = ""
 
-        self.mainMenu = Menu(self)
-        self.editMenu = Menu(self,tearoff=0)
-
-        self.AddMenu = Menu(self, tearoff=0)
-        self.AddMenu.add_cascade(label="Добавить кошку в соревнование", command=self.menuAddCat)
-        self.AddMenu.add_cascade(label="Добавить эксперта в соревнование", command=self.menuAddExpert)
-
-        self.mainMenu.add_cascade(label="Add", menu=self.AddMenu)
-
-        self.mainMenu.add_cascade(label="Обновить таблицу", command=self.menuUpdateTable)
-        self.mainMenu.add_cascade(label="Удалить выбранную строку", command=self.menuDeleteSelected)
+        self.FRTree=ttk.Frame(self, borderwidth=1, relief=SOLID, padding=[8, 10])
+        self.FRTree.pack(anchor=N, fill=X,expand=1)
 
         self.label=ttk.Label(self,text="-")
         self.label.pack(anchor=N, fill=X,expand=1)
@@ -50,15 +39,18 @@ class MainWindowOrganisator(Tk):
         self.comboBox.pack(anchor=NW, padx=6, pady=6)
         self.comboBox.bind("<<ComboboxSelected>>", self.tableViewInsertEvent)
 
+        self.BTMenuAddCat = ttk.Button(self, text="Добавить кошку", width=20, command=self.menuAddCat)
+        self.BTMenuAddCat.pack(anchor=CENTER)
+        self.BTMenuAddExpert = ttk.Button(self, text="Добавить эксперта", width=20, command=self.menuAddExpert)
+        self.BTMenuAddExpert.pack(anchor=CENTER)
+
         self.title("ProgramPython - Organisator window")
-        self.geometry("1000x500")
-        self.config(menu=self.mainMenu)
+        self.geometry("1150x500")
+        self.resizable(False, False)
 
         self.sqlPath = "festival.db"
         MainWindowOrganisator.sqlPath = self.sqlPath
-        self.connect = sqlite3.connect(self.sqlPath, timeout=5.0, detect_types=0,
-                                       isolation_level='DEFERRED', check_same_thread=True, factory=sqlite3.Connection,
-                                       cached_statements=128, uri=False)
+        self.connect = sqlite3.connect(self.sqlPath)
         MainWindowOrganisator.connect = self.connect
         self.cursor = self.connect.cursor()
         MainWindowOrganisator.columns = ()
@@ -69,12 +61,14 @@ class MainWindowOrganisator(Tk):
         for x in range(self.numOfColumns):
             MainWindowOrganisator.columns += self.cursor.execute(
                 f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
-        self.tree = ttk.Treeview(self, columns=MainWindowOrganisator.columns, show="headings")
-        self.tree.pack(anchor=S, fill=BOTH, expand=1)
+        self.tree = ttk.Treeview(self.FRTree, columns=MainWindowOrganisator.columns, show="headings")
+        self.tree.pack()
         for x in MainWindowOrganisator.columns:
             self.tree.heading(x, text=x)
 
         self.tree.bind("<<TreeviewSelect>>", self.select)
+        self.tree.bind('<Motion>', 'break')
+
 
         for x in self.tree.get_children():
             self.tree.delete(x)
@@ -93,6 +87,20 @@ class MainWindowOrganisator(Tk):
                 self.tree.insert("", END, values=x)
             except:
                 pass
+        for x in range(self.numOfColumns+1):
+            if self.comboBox.get() == "Кошки":
+                self.tree.column("#1", stretch=NO, width=30)
+                self.tree.column("#2", stretch=NO, width=80)
+                self.tree.column("#3", stretch=NO, width=90)
+                self.tree.column("#4", stretch=NO, width=90)
+                self.tree.column("#5", stretch=NO, width=70)
+                self.tree.column("#6", stretch=NO, width=160)
+                self.tree.column("#7", stretch=NO, width=150)
+                self.tree.column("#8", stretch=NO, width=150)
+                self.tree.column("#9", stretch=NO, width=150)
+                self.tree.column("#10", stretch=NO, width=150)
+        for x in MainWindowOrganisator.columns:
+            self.tree.heading(f"{x}", anchor=W)
 
 
 
@@ -157,12 +165,13 @@ class MainWindowOrganisator(Tk):
         self.numOfColumns=self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('{self.comboBox.get()}')").fetchone()[0]
         for x in range(self.numOfColumns):
             MainWindowOrganisator.columns += self.cursor.execute(f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
-        self.tree = ttk.Treeview(self, columns=MainWindowOrganisator.columns, show="headings")
-        self.tree.pack(anchor=S,fill=BOTH, expand=1)
+        self.tree = ttk.Treeview(self.FRTree, columns=MainWindowOrganisator.columns, show="headings")
+        self.tree.pack()
         for x in MainWindowOrganisator.columns:
             self.tree.heading(x,text=x)
 
         self.tree.bind("<<TreeviewSelect>>", self.select)
+        self.tree.bind('<Motion>', 'break')
 
         for x in self.tree.get_children():
             self.tree.delete(x)
@@ -181,5 +190,49 @@ class MainWindowOrganisator(Tk):
                 self.tree.insert("", END, values=x)
             except:
                 pass
+
+        for x in range(self.numOfColumns+1):
+            if self.comboBox.get() == "Кошки":
+                self.tree.column("#1", stretch=NO, width=30)
+                self.tree.column("#2", stretch=NO, width=80)
+                self.tree.column("#3", stretch=NO, width=90)
+                self.tree.column("#4", stretch=NO, width=90)
+                self.tree.column("#5", stretch=NO, width=70)
+                self.tree.column("#6", stretch=NO, width=160)
+                self.tree.column("#7", stretch=NO, width=150)
+                self.tree.column("#8", stretch=NO, width=150)
+                self.tree.column("#9", stretch=NO, width=150)
+                self.tree.column("#10", stretch=NO, width=150)
+            elif self.comboBox.get() == "Клубы":
+                self.tree.column("#1", stretch=NO, width=30)
+                self.tree.column("#2", stretch=NO, width=120)
+                self.tree.column("#3", stretch=NO, width=120)
+                self.tree.column("#4", stretch=NO, width=125)
+                self.tree.column("#5", stretch=NO, width=140)
+                self.tree.column("#6", stretch=NO, width=130)
+                self.tree.column("#7", stretch=NO, width=130)
+            elif self.comboBox.get() == "Эксперты":
+                self.tree.column("#1", stretch=NO, width=30)
+                self.tree.column("#2", stretch=NO, width=80)
+                self.tree.column("#3", stretch=NO, width=90)
+                self.tree.column("#4", stretch=NO, width=165)
+                self.tree.column("#5", stretch=NO, width=120)
+                self.tree.column("#6", stretch=NO, width=100)
+                self.tree.column("#7", stretch=NO, width=150)
+            elif self.comboBox.get() == "Ринги":
+                self.tree.column("#1", stretch=NO, width=30)
+                self.tree.column("#2", stretch=NO, width=180)
+                self.tree.column("#3", stretch=NO, width=180)
+            elif self.comboBox.get() == "Расписание":
+                self.tree.column("#1", stretch=NO, width=30)
+                self.tree.column("#2", stretch=NO, width=80)
+                self.tree.column("#3", stretch=NO, width=90)
+            elif self.comboBox.get() == "Результаты":
+                self.tree.column("#1", stretch=NO, width=30)
+                self.tree.column("#2", stretch=NO, width=80)
+                self.tree.column("#3", stretch=NO, width=90)
+                self.tree.column("#4", stretch=NO, width=90)
+        for x in MainWindowOrganisator.columns:
+            self.tree.heading(f"{x}", anchor=W)
 
 
