@@ -28,25 +28,37 @@ class MainWindowOrganisator(Tk):
         self.selectedProjects = ""
 
         self.FRTree=ttk.Frame(self, borderwidth=1, relief=SOLID, padding=[8, 10])
-        self.FRTree.pack(anchor=N, fill=X,expand=1)
+        self.FRTree.place(x=0,y=0)
+        self.FRLabel = ttk.Frame(self, borderwidth=1, relief=SOLID, padding=[8, 10])
+        self.FRLabel.place(x=0,y=275)
+        self.FRButtons = ttk.Frame(self, borderwidth=1, relief=SOLID, padding=[8, 10])
+        self.FRButtons.place(x=0,y=340)#532
 
-        self.label=ttk.Label(self,text="-")
-        self.label.pack(anchor=N, fill=X,expand=1)
+        self.label=ttk.Label(self.FRLabel,text="-")
+        self.label.pack(anchor=N, expand=1)
 
         self.Tables = ["Кошки", "Клубы", "Эксперты", "Ринги", "Расписание", "Результаты"]
         self.Tables_var = StringVar(value=self.Tables[0])
-        self.comboBox = ttk.Combobox(textvariable=self.Tables_var, values=self.Tables, state="readonly")
-        self.comboBox.pack(anchor=NW, padx=6, pady=6)
+        self.comboBox = ttk.Combobox(self.FRButtons, textvariable=self.Tables_var, values=self.Tables, state="readonly")
+        self.comboBox.grid(row=0, column=0)
         self.comboBox.bind("<<ComboboxSelected>>", self.tableViewInsertEvent)
 
-        self.BTMenuAddCat = ttk.Button(self, text="Добавить кошку", width=20, command=self.menuAddCat)
-        self.BTMenuAddCat.pack(anchor=CENTER)
-        self.BTMenuAddExpert = ttk.Button(self, text="Добавить эксперта", width=20, command=self.menuAddExpert)
-        self.BTMenuAddExpert.pack(anchor=CENTER)
+        self.BTMenuAddCat = ttk.Button(self.FRButtons, text="Добавить кошку", width=20, command=self.menuAddCat)
+        self.BTMenuAddCat.grid(row=0, column=1, padx=5, pady=5)
+        self.BTMenuAddExpert = ttk.Button(self.FRButtons, text="Добавить эксперта", width=20, command=self.menuAddExpert)
+        self.BTMenuAddExpert.grid(row=1, column=1, padx=5, pady=5)
+        self.BTDeleteCurrent = ttk.Button(self.FRButtons, text="Удалить строку", width=20, command=self.menuDeleteSelected)
+        self.BTDeleteCurrent.grid(row=0, column=2, padx=5, pady=5)
+        self.BTClose = ttk.Button(self.FRButtons, text="выход", width=20, command=self.destroy)
+        self.BTClose.grid(row=1, column=2, padx=5, pady=5)
+        self.BTUpdate = ttk.Button(self.FRButtons, text="Обновить таблицу", width=20, command=self.menuUpdateTable)
+        self.BTUpdate.grid(row=2, column=1, columnspan=2, padx=5, pady=5)
+
 
         self.title("ProgramPython - Organisator window")
         self.geometry("1150x500")
         self.resizable(False, False)
+        sv_ttk.set_theme("dark", self)
 
         self.sqlPath = "festival.db"
         MainWindowOrganisator.sqlPath = self.sqlPath
@@ -102,10 +114,6 @@ class MainWindowOrganisator(Tk):
         for x in MainWindowOrganisator.columns:
             self.tree.heading(f"{x}", anchor=W)
 
-
-
-        self.scrollbar = ttk.Scrollbar(self, orient="horizontal", command=self.tree.yview)
-        self.scrollbar.pack(side=BOTTOM, fill=X)
 
     def menuAddCat(self):
         MainWindowOrganisator.catOrExpert = 0

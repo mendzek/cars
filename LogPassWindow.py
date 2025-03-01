@@ -2,7 +2,7 @@ import os
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import showwarning, showinfo, askyesno
-
+import sv_ttk
 from MainWindowClubAdmin import MainWindowClubAdmin
 from MainWindowOrganisator import *
 import sqlite3
@@ -53,47 +53,42 @@ if not os.path.exists("Projects"):
 LogPassWindow = Tk()
 LogPassWindow.title("ProgramPython - Log in")
 LogPassWindow.geometry("600x400")
+sv_ttk.set_theme("dark", LogPassWindow)
 
 def on_entry_click1( event):
     if EntryLog.get() == 'Login':
         EntryLog.delete(0, "end")
         EntryLog.insert(0, '')
-        EntryLog.config(foreground='black')
-
-
+        EntryLog.config(foreground='white')
 def on_focusout1(event):
     if EntryLog.get() == '':
         EntryLog.insert(0, 'Login')
         EntryLog.config(foreground='grey')
-
-
 def on_entry_click2( event):
     if EntryPass.get() == 'Password':
         EntryPass.delete(0, "end")
         EntryPass.insert(0, '')
-        EntryPass.config(foreground='black')
-
-
+        EntryPass.config(foreground='white')
 def on_focusout2( event):
     if EntryPass.get() == '':
         EntryPass.insert(0, 'Password')
         EntryPass.config(foreground='grey')
 
-MainLabel = ttk.Label(LogPassWindow,width=30, font=("Arial", 30),text="ВЫСТАВКА КОШЕК")
+MainLabel = ttk.Label(LogPassWindow,width=30, font=("Arial", 30),text="          ВЫСТАВКА КОШЕК")
 MainLabel.pack(anchor=CENTER, pady=20)
 
-EntryLog = ttk.Entry(LogPassWindow, width=15, foreground='grey')
+EntryLog = ttk.Entry(LogPassWindow, width=15, font=("Arial", 20), foreground='grey')
 EntryLog.insert(0, "Login")
 EntryLog.bind('<FocusIn>', on_entry_click1)
 EntryLog.bind('<FocusOut>', on_focusout1)
-EntryLog.pack(anchor=CENTER, pady=20)
+EntryLog.pack(anchor=CENTER, pady=10)
 
-EntryPass = ttk.Entry(LogPassWindow, width=15, foreground='grey')
+EntryPass = ttk.Entry(LogPassWindow, width=15, font=("Arial", 20), foreground='grey')
 EntryPass.config(show="*")
 EntryPass.insert(0, "Password")
 EntryPass.bind('<FocusIn>', on_entry_click2)
 EntryPass.bind('<FocusOut>', on_focusout2)
-EntryPass.pack(anchor=CENTER, pady=20)
+EntryPass.pack(anchor=CENTER, pady=10)
 
 BTLogPassAccept = ttk.Button(LogPassWindow, text="Log in", width=20, command=AcceptLogPass)
 BTLogPassAccept.pack(anchor=CENTER)
