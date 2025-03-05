@@ -64,14 +64,15 @@ class MainWindowClubAdmin(Tk):
         MainWindowClubAdmin.connect = self.connect
         self.cursor = self.connect.cursor()
         MainWindowClubAdmin.columns = ()
-        self.cursor.execute(f"SELECT COUNT(*) FROM {self.comboBox.get()}")
-        self.numOfRows = self.cursor.fetchone()[0]
+        self.cursor.execute(f"SELECT id FROM {self.comboBox.get()}")
+        self.numOfRows = self.cursor.fetchall()
         self.numOfColumns = \
-        self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('{self.comboBox.get()}')").fetchone()[0]
+            self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('{self.comboBox.get()}')").fetchone()[0]
         for x in range(self.numOfColumns):
-            MainWindowClubAdmin.columns += self.cursor.execute(f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
+            MainWindowClubAdmin.columns += self.cursor.execute(
+                f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
         self.tree = ttk.Treeview(self.FRTree, columns=MainWindowClubAdmin.columns, show="headings")
-        self.tree.pack(anchor=S, fill=BOTH, expand=1)
+        self.tree.pack()
         for x in MainWindowClubAdmin.columns:
             self.tree.heading(x, text=x)
 
@@ -84,18 +85,15 @@ class MainWindowClubAdmin(Tk):
         self.headValues.extend(MainWindowClubAdmin.columns)
         self.checkTemp = False
 
-        for x in range(self.numOfRows + 1):
-            self.cursor.execute(f"SELECT * FROM {self.comboBox.get()} WHERE id={x}")
-            if self.checkTemp == False:
-                self.checkTemp = True
-            else:
-                self.tableValues.append(self.cursor.fetchone())
+        for x in self.numOfRows:
+            self.cursor.execute(f"SELECT * FROM {self.comboBox.get()} WHERE id={x[0]} ")
+            self.tableValues.append(self.cursor.fetchone())
         for x in self.tableValues:
             try:
                 self.tree.insert("", END, values=x)
             except:
                 pass
-        for x in range(self.numOfColumns+1):
+        for x in range(self.numOfColumns + 1):
             if self.comboBox.get() == "Кошки":
                 self.tree.column("#1", stretch=NO, width=30)
                 self.tree.column("#2", stretch=NO, width=80)
@@ -107,7 +105,7 @@ class MainWindowClubAdmin(Tk):
                 self.tree.column("#8", stretch=NO, width=150)
                 self.tree.column("#9", stretch=NO, width=150)
                 self.tree.column("#10", stretch=NO, width=150)
-        for x in MainWindowOrganisator.columns:
+        for x in MainWindowClubAdmin.columns:
             self.tree.heading(f"{x}", anchor=W)
 
     def menuAddCat(self):
@@ -154,21 +152,21 @@ class MainWindowClubAdmin(Tk):
         self.tree.destroy()
         self.sqlPath = "festival.db"
         MainWindowClubAdmin.sqlPath = self.sqlPath
-        self.connect = sqlite3.connect(self.sqlPath, timeout=5.0, detect_types=0,
-                                       isolation_level='DEFERRED', check_same_thread=True, factory=sqlite3.Connection,
-                                       cached_statements=128, uri=False)
+        self.connect = sqlite3.connect(self.sqlPath)
         MainWindowClubAdmin.connect = self.connect
         self.cursor = self.connect.cursor()
         MainWindowClubAdmin.columns = ()
-        self.cursor.execute(f"SELECT COUNT(*) FROM {self.comboBox.get()}")
-        self.numOfRows = self.cursor.fetchone()[0]
-        self.numOfColumns=self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('{self.comboBox.get()}')").fetchone()[0]
+        self.cursor.execute(f"SELECT id FROM {self.comboBox.get()}")
+        self.numOfRows = self.cursor.fetchall()
+        self.numOfColumns = \
+            self.cursor.execute(f"SELECT COUNT(*) FROM pragma_table_info('{self.comboBox.get()}')").fetchone()[0]
         for x in range(self.numOfColumns):
-            MainWindowClubAdmin.columns += self.cursor.execute(f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
+            MainWindowClubAdmin.columns += self.cursor.execute(
+                f"SELECT name FROM pragma_table_info('{self.comboBox.get()}') Where cid={x}").fetchone()
         self.tree = ttk.Treeview(self.FRTree, columns=MainWindowClubAdmin.columns, show="headings")
-        self.tree.pack(anchor=S,fill=BOTH, expand=1)
+        self.tree.pack()
         for x in MainWindowClubAdmin.columns:
-            self.tree.heading(x,text=x)
+            self.tree.heading(x, text=x)
 
         self.tree.bind("<<TreeviewSelect>>", self.select)
         self.tree.bind('<Motion>', 'break')
@@ -177,14 +175,11 @@ class MainWindowClubAdmin(Tk):
             self.tree.delete(x)
 
         self.headValues.extend(MainWindowClubAdmin.columns)
-        self.checkTemp=False
+        self.checkTemp = False
 
-        for x in range(self.numOfRows+1):
-            self.cursor.execute(f"SELECT * FROM {self.comboBox.get()} WHERE id={x}")
-            if self.checkTemp==False:
-                self.checkTemp=True
-            else:
-                self.tableValues.append(self.cursor.fetchone())
+        for x in self.numOfRows:
+            self.cursor.execute(f"SELECT * FROM {self.comboBox.get()} WHERE id={x[0]} ")
+            self.tableValues.append(self.cursor.fetchone())
         for x in self.tableValues:
             try:
                 self.tree.insert("", END, values=x)
@@ -202,36 +197,5 @@ class MainWindowClubAdmin(Tk):
                 self.tree.column("#8", stretch=NO, width=150)
                 self.tree.column("#9", stretch=NO, width=150)
                 self.tree.column("#10", stretch=NO, width=150)
-            elif self.comboBox.get() == "Клубы":
-                self.tree.column("#1", stretch=NO, width=30)
-                self.tree.column("#2", stretch=NO, width=120)
-                self.tree.column("#3", stretch=NO, width=120)
-                self.tree.column("#4", stretch=NO, width=125)
-                self.tree.column("#5", stretch=NO, width=140)
-                self.tree.column("#6", stretch=NO, width=130)
-                self.tree.column("#7", stretch=NO, width=130)
-            elif self.comboBox.get() == "Эксперты":
-                self.tree.column("#1", stretch=NO, width=30)
-                self.tree.column("#2", stretch=NO, width=80)
-                self.tree.column("#3", stretch=NO, width=90)
-                self.tree.column("#4", stretch=NO, width=165)
-                self.tree.column("#5", stretch=NO, width=120)
-                self.tree.column("#6", stretch=NO, width=100)
-                self.tree.column("#7", stretch=NO, width=150)
-            elif self.comboBox.get() == "Ринги":
-                self.tree.column("#1", stretch=NO, width=30)
-                self.tree.column("#2", stretch=NO, width=180)
-                self.tree.column("#3", stretch=NO, width=180)
-            elif self.comboBox.get() == "Расписание":
-                self.tree.column("#1", stretch=NO, width=30)
-                self.tree.column("#2", stretch=NO, width=80)
-                self.tree.column("#3", stretch=NO, width=90)
-            elif self.comboBox.get() == "Результаты":
-                self.tree.column("#1", stretch=NO, width=30)
-                self.tree.column("#2", stretch=NO, width=80)
-                self.tree.column("#3", stretch=NO, width=90)
-                self.tree.column("#4", stretch=NO, width=90)
         for x in MainWindowClubAdmin.columns:
             self.tree.heading(f"{x}", anchor=W)
-
-

@@ -99,4 +99,3 @@ comboBox = ttk.Combobox(LogPassWindow, textvariable=Tables_var, values=Tables, s
 comboBox.pack(anchor=NW, padx=6, pady=6)
 comboBox.set("Организатор")
 
-
